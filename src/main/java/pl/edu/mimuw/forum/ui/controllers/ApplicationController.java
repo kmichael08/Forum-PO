@@ -1,6 +1,7 @@
 package pl.edu.mimuw.forum.ui.controllers;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -104,15 +106,22 @@ public class ApplicationController implements Initializable {
 
 	/**
 	 * Otwiera nowa, pusta zakladke.
+	 * @throws IOException 
 	 */
 	private void newPane() {
-		open(null);
+		try {
+			open(null);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
 	 * Wyswietla okno dialogowe do wyboru pliku i otwiera wybrany plik w nowej zakladce.
+	 * @throws IOException 
 	 */
-	private void open() {
+	private void open()  {
 		FileChooser fileChooser = new FileChooser();
 		setUpFileChooser(fileChooser);
 		File file = fileChooser.showOpenDialog(mainPane.getScene().getWindow());
@@ -126,15 +135,21 @@ public class ApplicationController implements Initializable {
 			return;
 		}
 
-		open(file);
+		try {
+			open(file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
 	 * Otwiera podany plik z zapisem forum w nowej zakladce.
 	 * @param file
+	 * @throws IOException 
 	 */
 	
-	private void open(File file) {
+	private void open(File file) throws IOException {
 		MainPaneController controller = new MainPaneController();
 
 		innocuous(file);
@@ -144,6 +159,9 @@ public class ApplicationController implements Initializable {
 		} catch (ApplicationException e) {
 			DialogHelper.ShowError("Error opening the file.", e);
 			return;
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		addView(view, controller);
@@ -277,7 +295,7 @@ public class ApplicationController implements Initializable {
 
 	private Dialog<NodeViewModel> createAddDialog() throws ApplicationException {
 
-		/* W ten sposob tworzymy nowe okno dialogowe z pliku fxml ...	
+		/* W ten sposob tworzymy nowe okno dialogowe z pliku fxml ... 
 		try {
 			return FXMLLoader.load(getClass().getResource("/fxml/add_dialog.fxml"));
 		} catch (IOException e) {
@@ -297,7 +315,9 @@ public class ApplicationController implements Initializable {
 						buttonType == ButtonType.OK ? new CommentViewModel("Some text", "Anonymous") : null);
 			}
 		};
+		
 	}
+	
 
 	private Optional<MainPaneController> getPaneController() {
 		return Optional.ofNullable(tabPane.getSelectionModel().getSelectedItem())
