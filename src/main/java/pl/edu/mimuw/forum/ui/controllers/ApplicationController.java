@@ -171,7 +171,12 @@ public class ApplicationController implements Initializable {
 					}
 					
 					
-					controller.save();
+					try {
+						controller.save();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				})));
 	}
 

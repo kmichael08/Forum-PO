@@ -2,10 +2,15 @@ package pl.edu.mimuw.forum.ui.controllers;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
@@ -104,12 +109,24 @@ public class MainPaneController implements Initializable {
 	/**
 	 * Zapisuje aktualny stan forum do pliku.
 	 * @throws ApplicationException
+	 * @throws IOException 
 	 */
-	public void save() throws ApplicationException {
+	public void save() throws ApplicationException, IOException {
 		//TODO Tutaj umiescic wywolanie obslugi zapisu drzewa z widoku do pliku
 		/**
 		 * Obiekt pliku do ktorego mamy zapisac drzewo znajduje sie w getPaneBindings().fileProperty().get()
 		 */
+		String nazwaPliku = getPaneBindings().fileProperty().get().getAbsolutePath();
+		
+		PrintWriter pw = new PrintWriter(nazwaPliku, "UTF-8");
+		XStream xstream = new XStream(new DomDriver("Unicode"));
+		
+		ObjectOutputStream out = xstream.createObjectOutputStream(pw, "Forum");
+		
+		// zapisywac tak dlugo jak cos jest w stream ?? - chociaz chyba dziala
+		out.writeObject(document.toNode());
+		out.close();
+		
 		if (document != null) {
 			System.out.println("On save " + document.toNode());	//Tak tworzymy drzewo do zapisu z modelu aplikacji
 		}
