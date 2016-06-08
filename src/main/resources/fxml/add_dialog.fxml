@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.image.Image?>
+
+
+<Dialog fx:id="dialog"
+	fx:controller="???" <!-- TODO: Tutaj wstawic nazwe wlasnej klasy kontrolera okna -->
+	xmlns:fx="http://javafx.com/fxml">
+	<dialogPane>
+		<DialogPane prefWidth="400.0" prefHeight="300.0">
+			<stylesheets>
+				<URL value="@/css/styles.css" />
+			</stylesheets>
+			<content>
+				<VBox>
+					<!-- TODO: Tutaj umiescic zawartosc okna dialogowego -->
+					<Label text="Add some content here..."></Label>
+				</VBox>
+			</content>
+		</DialogPane>
+	</dialogPane>
+</Dialog>
