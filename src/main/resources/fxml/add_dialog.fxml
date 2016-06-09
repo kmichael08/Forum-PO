@@ -1,21 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.image.Image?>
 
 <Dialog fx:id="dialog"
         fx:controller="pl.edu.mimuw.forum.ui.controllers.AddDialogController"
         xmlns:fx="http://javafx.com/fxml">
   <dialogPane>
+  
     <DialogPane prefWidth="400.0" prefHeight="300.0">
-      <content>
-        <VBox>
+       <stylesheets>
+			<URL value="@/css/styles.css" />
+	   </stylesheets>
+       <content>
+       <VBox>
           <fx:define>
             <ToggleGroup fx:id="myToggleGroup"/>
           </fx:define>
           <RadioButton text="Comment" toggleGroup="$myToggleGroup"/>
-          <RadioButton text="Survey" toggleGroup="$myToggleGroup"/>
           <RadioButton text="Suggestion" toggleGroup="$myToggleGroup"/>
+          <RadioButton text="Survey" toggleGroup="$myToggleGroup"/>
+          <RadioButton text="Task" toggleGroup="$myToggleGroup"/>
         </VBox>
       </content>
     </DialogPane>

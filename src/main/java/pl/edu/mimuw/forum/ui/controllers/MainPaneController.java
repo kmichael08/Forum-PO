@@ -309,6 +309,7 @@ public class MainPaneController implements Initializable {
 				}
 			}
 		});
+		
 		return viewNode;
 	}
 

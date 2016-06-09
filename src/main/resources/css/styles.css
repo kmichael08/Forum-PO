@@ -66,6 +66,10 @@
     -fx-background-color: transparent;
 }
 
+.radio-button {
+	-fx-font-size: 14pt;
+	-fx-padding : 10px
+}
 .text-area .content {
 	-fx-background-color: transparent;
 }

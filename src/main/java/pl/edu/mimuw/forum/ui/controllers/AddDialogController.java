@@ -1,5 +1,6 @@
 package pl.edu.mimuw.forum.ui.controllers;
 
+import java.util.Date;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -8,15 +9,19 @@ import pl.edu.mimuw.forum.data.*;
 import pl.edu.mimuw.forum.ui.models.NodeViewModel;
 
 public class AddDialogController {
+	
     @FXML private ToggleGroup myToggleGroup;
+    
     @FXML private Dialog<NodeViewModel> dialog;
 
     public void initialize() {
+    	
         dialog.getDialogPane().getButtonTypes().addAll(
                 ButtonType.OK, ButtonType.CANCEL
         );
 
         Node okButton = dialog.getDialogPane().lookupButton(ButtonType.OK);
+        
         okButton.disableProperty().bind(
                 Bindings.isNull(
                         myToggleGroup.selectedToggleProperty()
@@ -27,7 +32,7 @@ public class AddDialogController {
     }
 
     private NodeViewModel convertDialogResult(ButtonType buttonType) {
-        if (ButtonType.OK.equals(buttonType)) {
+    	if (ButtonType.OK.equals(buttonType)) {
             return getSelectedToggleValue();
         } 
         else {
@@ -37,13 +42,13 @@ public class AddDialogController {
 
     private NodeViewModel getSelectedToggleValue() {
         RadioButton selectedRadio = (RadioButton) myToggleGroup.getSelectedToggle();
-        System.out.println(selectedRadio.getText());
         if (selectedRadio == null) {
             return null;
         }
         if (selectedRadio.getText().equals("Comment")) return new Comment("Some text", "Anonymous").getModel();
         else if (selectedRadio.getText().equals("Survey")) return new Survey("Some text", "Anonymous").getModel();
         else if (selectedRadio.getText().equals("Suggestion")) return new Suggestion("Some text", "Anonymous", "Feedback").getModel();
+        else if (selectedRadio.getText().equals("Task")) return new Task(new Date(),"Some text", "Anonymous").getModel();
         return null;
     }
 }

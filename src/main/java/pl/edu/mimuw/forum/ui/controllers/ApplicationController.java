@@ -156,20 +156,22 @@ public class ApplicationController implements Initializable {
 	
 	private void open(File file) throws IOException {
 		MainPaneController controller = new MainPaneController();
-
 		innocuous(file);
 		Node view = null;
 		try {
 			view = controller.open(file);
-		} catch (ApplicationException e) {
+		} 
+		catch (ApplicationException e) {
 			DialogHelper.ShowError("Error opening the file.", e);
 			return;
-		} catch (ClassNotFoundException e) {
+		} 
+		catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		
 		addView(view, controller);
+	
 	}
 
 	/**
@@ -301,7 +303,8 @@ public class ApplicationController implements Initializable {
 		tabPane.getTabs().add(tab);
 		tabPane.getSelectionModel().select(tab);
 	}
-
+	
+	/*
 	private NodeViewModel convertDialogResult(ButtonType buttonType) {
 	    if (buttonType == ButtonType.OK) {
 	        return Dummy.Create().getModel();
@@ -309,6 +312,7 @@ public class ApplicationController implements Initializable {
 	        return null;
 	    }
 	}
+	*/
 
 	private Dialog<NodeViewModel> createAddDialog() throws ApplicationException {
 
