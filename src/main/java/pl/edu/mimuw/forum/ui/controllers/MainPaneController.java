@@ -50,7 +50,7 @@ public class MainPaneController implements Initializable {
 	 * Wiazania stosowane do komunikacji z {@link pl.edu.mimuw.forum.ui.controller.ApplicationController }.
 	 */
 	private MainPaneBindings bindings;
-
+	
 	/**
 	 * Widok drzewa forum (wyswietlany w lewym panelu).
 	 */
@@ -239,7 +239,7 @@ public class MainPaneController implements Initializable {
 
 		treePane.getSelectionModel().selectedItemProperty()
 				.addListener((observable, oldValue, newValue) -> onItemSelected(oldValue, newValue));
-
+		
 		return view;
 	}
 	
@@ -309,7 +309,6 @@ public class MainPaneController implements Initializable {
 				}
 			}
 		});
-
 		return viewNode;
 	}
 
@@ -320,6 +319,7 @@ public class MainPaneController implements Initializable {
 
 	private void onItemSelected(TreeItem<NodeViewModel> oldItem, TreeItem<NodeViewModel> newItem) {
 		detailsController.setModel(newItem != null ? newItem.getValue() : null);
+		// klikniecie w inny node
 	}
 
 }

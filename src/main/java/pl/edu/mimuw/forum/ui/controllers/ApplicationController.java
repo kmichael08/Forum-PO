@@ -18,13 +18,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import pl.edu.mimuw.forum.example.Dummy;
 import pl.edu.mimuw.forum.exceptions.ApplicationException;
 import pl.edu.mimuw.forum.ui.bindings.MainPaneBindings;
 import pl.edu.mimuw.forum.ui.bindings.ToolbarBindings;
@@ -86,7 +90,7 @@ public class ApplicationController implements Initializable {
 				props[0], props[1], props[2], props[3], props[4]);
 
 		toolbarController.bind(bindings);
-
+	
 		tabPane.getSelectionModel().selectedItemProperty().addListener(observable -> {
 			Optional<MainPaneController> controllerOption = getPaneController();
 			if (controllerOption.isPresent()) {
@@ -101,6 +105,7 @@ public class ApplicationController implements Initializable {
 				});
 			}
 		});
+		
 
 	}
 
@@ -224,9 +229,13 @@ public class ApplicationController implements Initializable {
 	private void addNode() {
 		when(bindings.getCanAddNode(), () -> {
 			Dialog<NodeViewModel> dialog = createAddDialog();
+			
+			// dialog.show();
 			dialog.showAndWait().ifPresent(node -> getPaneController()
 					.ifPresent(controller -> tryExecute("Error adding a new node.", () -> controller.addNode(node))));
+			
 		});
+		
 	}
 
 	/**
@@ -293,15 +302,28 @@ public class ApplicationController implements Initializable {
 		tabPane.getSelectionModel().select(tab);
 	}
 
+	private NodeViewModel convertDialogResult(ButtonType buttonType) {
+	    if (buttonType == ButtonType.OK) {
+	        return Dummy.Create().getModel();
+	    } else {
+	        return null;
+	    }
+	}
+
 	private Dialog<NodeViewModel> createAddDialog() throws ApplicationException {
 
-		/* W ten sposob tworzymy nowe okno dialogowe z pliku fxml ... 
-		try {
-			return FXMLLoader.load(getClass().getResource("/fxml/add_dialog.fxml"));
-		} catch (IOException e) {
-			throw new ApplicationException(e);
-		}
-		*/
+	    try {
+	        Dialog<NodeViewModel> dialog = FXMLLoader.load(getClass().getResource("/fxml/add_dialog.fxml"));
+
+	        //dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+	        //dialog.setResultConverter(this::convertDialogResult);
+	        return dialog;
+	    } catch (IOException e) {
+	        throw new ApplicationException(e);
+	    }
+	}
+		
+		/*
 		
 		//TODO Tymczasem tworzymy puste (no prawie...) okno dialogowe
 		// Nacisniecie OK spodowoduje dodanie nowego komentarza
@@ -315,8 +337,8 @@ public class ApplicationController implements Initializable {
 						buttonType == ButtonType.OK ? new CommentViewModel("Some text", "Anonymous") : null);
 			}
 		};
-		
-	}
+		*/
+	
 	
 
 	private Optional<MainPaneController> getPaneController() {

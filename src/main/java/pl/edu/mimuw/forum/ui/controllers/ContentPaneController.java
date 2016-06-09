@@ -41,6 +41,7 @@ public class ContentPaneController extends BasePaneController {
 		
 		userProperty().addListener((observable, oldValue, newValue) -> {
 			System.out.println("Changing user name: " + oldValue + "->" + newValue);
+
 		});
 		
 		commentProperty().addListener((observable, oldValue, newValue) -> {
