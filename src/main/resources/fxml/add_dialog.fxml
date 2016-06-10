@@ -13,7 +13,7 @@
         xmlns:fx="http://javafx.com/fxml">
   <dialogPane>
   
-    <DialogPane prefWidth="400.0" prefHeight="300.0">
+    <DialogPane prefWidth="400.0" prefHeight="500.0">
        <stylesheets>
 			<URL value="@/css/styles.css" />
 	   </stylesheets>
@@ -26,6 +26,24 @@
           <RadioButton text="Suggestion" toggleGroup="$myToggleGroup"/>
           <RadioButton text="Survey" toggleGroup="$myToggleGroup"/>
           <RadioButton text="Task" toggleGroup="$myToggleGroup"/>
+          <Label text="User:">
+			<graphic>
+				<ImageView>
+					<Image url="@../images/user.png" />
+				</ImageView>
+			</graphic>
+		  </Label>
+		  <TextField fx:id="userField" promptText="Enter user name..." />
+	
+		  <Label text="Comment:">
+			<graphic>
+				<ImageView>
+					<Image url="@../images/comment.png" />
+				</ImageView>
+			</graphic>
+		  </Label>
+          <TextArea fx:id="commentField" promptText="Enter comment..." />
+          
         </VBox>
       </content>
     </DialogPane>

@@ -87,7 +87,7 @@ public class MainPaneController implements Initializable {
 						Bindings.createBooleanBinding(() -> getCurrentTreeItem().orElse(null) != treePane.getRoot(),
 								treePane.rootProperty(), nodeSelectedBinding)));
 		
-		bindings.hasChangesProperty().set(false);		// TODO Nalezy ustawic na true w przypadku, gdy w widoku sa zmiany do
+		bindings.hasChangesProperty().set(true);		// Nalezy ustawic na true w przypadku, gdy w widoku sa zmiany do
 														// zapisania i false wpp, w odpowiednim miejscu kontrolera (niekoniecznie tutaj)
 														// Spowoduje to dodanie badz usuniecie znaku '*' z tytulu zakladki w ktorej
 														// otwarty jest plik - '*' oznacza niezapisane zmiany
@@ -109,9 +109,7 @@ public class MainPaneController implements Initializable {
 	 */
 	public Node open(File file) throws ApplicationException, IOException, ClassNotFoundException {
 		if (file != null) {
-			// TODO Tutaj dodaj obsluge otwierania forum z pliku
-			// Tymczasem tworzone jest przykladowe drzewo w pamieci
-			
+		
 			String nazwaPliku = file.getAbsolutePath();
 			
 			XStream xstream = new XStream(new DomDriver("Unicode"));
@@ -125,8 +123,8 @@ public class MainPaneController implements Initializable {
 			
 			in.close();
 			
-			// document = Dummy.Create().getModel();
-		} else {
+		} 
+		else {
 			document = new NodeViewModel("Welcome to a new forum", "Admin");
 		}
 
@@ -136,8 +134,6 @@ public class MainPaneController implements Initializable {
 
 		getPaneBindings().fileProperty().set(file);
 	
-		bindings.hasChangesProperty().set(false);
-
 		return openInView(document);
 	}
 
@@ -147,7 +143,6 @@ public class MainPaneController implements Initializable {
 	 * @throws IOException 
 	 */
 	public void save() throws ApplicationException, IOException {
-		//TODO Tutaj umiescic wywolanie obslugi zapisu drzewa z widoku do pliku
 		/**
 		 * Obiekt pliku do ktorego mamy zapisac drzewo znajduje sie w getPaneBindings().fileProperty().get()
 		 */
@@ -180,7 +175,6 @@ public class MainPaneController implements Initializable {
 		else
 			op.przodek().getChildren().add(op.syn());
 		
-		System.out.println("On undo");	//TODO Tutaj umiescic obsluge undo
 	}
 	
 
@@ -197,8 +191,7 @@ public class MainPaneController implements Initializable {
 			op.przodek().getChildren().add(op.syn());
 		else
 			op.przodek().getChildren().remove(op.syn());
-			
-		System.out.println("On redo");	//TODO Tutaj umiescic obsluge redo
+		
 	}
 
 	/**
@@ -264,10 +257,12 @@ public class MainPaneController implements Initializable {
 	
 	private Node openInView(NodeViewModel document) throws ApplicationException {
 		Node view = loadFXML();
-
+				
 		treePane.setCellFactory(tv -> {
 			try {
 				//Do reprezentacji graficznej wezla uzywamy niestandardowej klasy wyswietlajacej 2 etykiety
+				// tworzenie nowego widoku
+				bindings.hasChangesProperty().set(true);
 				return new TreeLabel();
 			} catch (ApplicationException e) {
 				DialogHelper.ShowError("Error creating a tree cell.", e);
@@ -277,7 +272,7 @@ public class MainPaneController implements Initializable {
 
 		ForumTreeItem root = createViewNode(document);
 		root.addEventHandler(TreeItem.<NodeViewModel> childrenModificationEvent(), event -> {
-			//TODO Moze przydac sie do wykrywania usuwania/dodawania wezlow w drzewie (widoku)
+
 			if (event.wasAdded()) { 
 				//System.out.println("Adding to " + event.getSource());	
 				setModificationButtons();
@@ -288,6 +283,7 @@ public class MainPaneController implements Initializable {
 				setModificationButtons();
 			}
 			
+			// dodanie/ usuniecie wezla
 			bindings.hasChangesProperty().set(true);
 		});
 
@@ -302,6 +298,9 @@ public class MainPaneController implements Initializable {
 		treePane.getSelectionModel().selectedItemProperty()
 				.addListener((observable, oldValue, newValue) -> onItemSelected(oldValue, newValue));
 		
+		// otwarcie z pliku
+		bindings.hasChangesProperty().set(false);
+
 		return view;
 	}
 	

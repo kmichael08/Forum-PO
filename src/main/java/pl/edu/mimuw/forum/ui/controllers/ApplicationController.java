@@ -308,46 +308,18 @@ public class ApplicationController implements Initializable {
 		tabPane.getSelectionModel().select(tab);
 	}
 	
-	/*
-	private NodeViewModel convertDialogResult(ButtonType buttonType) {
-	    if (buttonType == ButtonType.OK) {
-	        return Dummy.Create().getModel();
-	    } else {
-	        return null;
-	    }
-	}
-	*/
-
+	
 	private Dialog<NodeViewModel> createAddDialog() throws ApplicationException {
 
 	    try {
 	        Dialog<NodeViewModel> dialog = FXMLLoader.load(getClass().getResource("/fxml/add_dialog.fxml"));
 
-	        //dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-	        //dialog.setResultConverter(this::convertDialogResult);
 	        return dialog;
 	    } catch (IOException e) {
 	        throw new ApplicationException(e);
 	    }
 	}
 		
-		/*
-		
-		//TODO Tymczasem tworzymy puste (no prawie...) okno dialogowe
-		// Nacisniecie OK spodowoduje dodanie nowego komentarza
-		// Ten fragment kodu nalezy zastapic implementacja wyswietlania kompletnego okna dodawania nowego wezla.
-		return new Dialog<NodeViewModel>() {
-			{
-				getDialogPane().setContent(new Label("Dummy content"));
-				getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-				
-				setResultConverter(buttonType -> 
-						buttonType == ButtonType.OK ? new CommentViewModel("Some text", "Anonymous") : null);
-			}
-		};
-		*/
-	
-	
 
 	private Optional<MainPaneController> getPaneController() {
 		return Optional.ofNullable(tabPane.getSelectionModel().getSelectedItem())

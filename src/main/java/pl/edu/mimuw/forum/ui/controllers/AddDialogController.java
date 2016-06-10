@@ -1,6 +1,7 @@
 package pl.edu.mimuw.forum.ui.controllers;
 
 import java.util.Date;
+
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -15,13 +16,20 @@ public class AddDialogController {
     
     @FXML 
     private Dialog<NodeViewModel> dialog;
+    
+	@FXML
+	private TextField userField;
+
+	@FXML
+	private TextArea commentField;
+
 
     public void initialize() {
     	
         dialog.getDialogPane().getButtonTypes().addAll(
                 ButtonType.OK, ButtonType.CANCEL
         );
-
+        
         Node okButton = dialog.getDialogPane().lookupButton(ButtonType.OK);
         
         okButton.disableProperty().bind(
@@ -29,7 +37,7 @@ public class AddDialogController {
                         myToggleGroup.selectedToggleProperty()
                 )
         );
-
+		
         dialog.setResultConverter(this::convertDialogResult);
     }
 
@@ -43,20 +51,27 @@ public class AddDialogController {
     }
 
     private NodeViewModel getSelectedToggleValue() {
+        String author = userField.getText();
+        String content = commentField.getText();
+        
+        if (author.equals(""))
+        	author = "Anonymous";
+        
         RadioButton selectedRadio = (RadioButton) myToggleGroup.getSelectedToggle();
         if (selectedRadio == null) {
             return null;
         }
-        String text, content;
+        
         
         if (selectedRadio.getText().equals("Comment")) 
-        	return new Comment("Some text", "Anonymous").getModel();
+        	return new Comment(content, author).getModel();
         else if (selectedRadio.getText().equals("Survey")) 
-        	return new Survey("Some text", "Anonymous").getModel();
+        	return new Survey(content, author).getModel();
         else if (selectedRadio.getText().equals("Suggestion")) 
-        	return new Suggestion("Some text", "Anonymous", "Feedback").getModel();
+        	return new Suggestion(content, author, "Feedback").getModel();
         else if (selectedRadio.getText().equals("Task")) 
-        	return new Task(new Date(),"Some text", "Anonymous").getModel();
+        	return new Task(new Date(),content, author).getModel();
+        
         return null;
     }
 }
