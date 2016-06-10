@@ -38,7 +38,12 @@ import pl.edu.mimuw.forum.ui.models.CommentViewModel;
 import pl.edu.mimuw.forum.ui.models.NodeViewModel;
 
 /**
- * Kontroler glownego okna aplikacji. Odpowiada za k
+/**
+ * Kontroler glownego okna aplikacji.
+ * Odpowiada za obsluge zdarzen klikniecia w przycisk z glownego "paska z narzedziami",
+ * przy czym jesli wybrana operacja polega na wykonaniu zmiany w aktualnie wybranym widoku forum 
+ * (np. usunieciu komentarza z forum) do obsluga ta jest delegowana do kontrolera tego widoku.
+ * 
  */
 public class ApplicationController implements Initializable {
 
@@ -199,8 +204,7 @@ public class ApplicationController implements Initializable {
 					try {
 						controller.save();
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						throw new ApplicationException(e);
 					}
 				})));
 	}

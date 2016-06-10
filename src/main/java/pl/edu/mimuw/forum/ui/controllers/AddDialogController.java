@@ -10,9 +10,11 @@ import pl.edu.mimuw.forum.ui.models.NodeViewModel;
 
 public class AddDialogController {
 	
-    @FXML private ToggleGroup myToggleGroup;
+    @FXML 
+    private ToggleGroup myToggleGroup;
     
-    @FXML private Dialog<NodeViewModel> dialog;
+    @FXML 
+    private Dialog<NodeViewModel> dialog;
 
     public void initialize() {
     	
@@ -45,10 +47,16 @@ public class AddDialogController {
         if (selectedRadio == null) {
             return null;
         }
-        if (selectedRadio.getText().equals("Comment")) return new Comment("Some text", "Anonymous").getModel();
-        else if (selectedRadio.getText().equals("Survey")) return new Survey("Some text", "Anonymous").getModel();
-        else if (selectedRadio.getText().equals("Suggestion")) return new Suggestion("Some text", "Anonymous", "Feedback").getModel();
-        else if (selectedRadio.getText().equals("Task")) return new Task(new Date(),"Some text", "Anonymous").getModel();
+        String text, content;
+        
+        if (selectedRadio.getText().equals("Comment")) 
+        	return new Comment("Some text", "Anonymous").getModel();
+        else if (selectedRadio.getText().equals("Survey")) 
+        	return new Survey("Some text", "Anonymous").getModel();
+        else if (selectedRadio.getText().equals("Suggestion")) 
+        	return new Suggestion("Some text", "Anonymous", "Feedback").getModel();
+        else if (selectedRadio.getText().equals("Task")) 
+        	return new Task(new Date(),"Some text", "Anonymous").getModel();
         return null;
     }
 }

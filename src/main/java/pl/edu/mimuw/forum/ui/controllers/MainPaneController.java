@@ -10,6 +10,8 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -25,6 +27,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import pl.edu.mimuw.forum.data.Operacja;
+import pl.edu.mimuw.forum.data.TypOperacji;
 import pl.edu.mimuw.forum.example.Dummy;
 import pl.edu.mimuw.forum.exceptions.ApplicationException;
 import pl.edu.mimuw.forum.ui.bindings.MainPaneBindings;
@@ -62,7 +66,14 @@ public class MainPaneController implements Initializable {
 	 */
 	@FXML
 	private DetailsPaneController detailsController;
-
+	
+	// Historia dokonanych operacji
+	private List<Operacja> operations = new ArrayList<Operacja>();
+	
+	// Pozycja aktualna na liście
+	private int actualPosition = 0;
+	
+	
 	public MainPaneController() {
 		bindings = new MainPaneBindings();
 	}
@@ -80,8 +91,8 @@ public class MainPaneController implements Initializable {
 														// zapisania i false wpp, w odpowiednim miejscu kontrolera (niekoniecznie tutaj)
 														// Spowoduje to dodanie badz usuniecie znaku '*' z tytulu zakladki w ktorej
 														// otwarty jest plik - '*' oznacza niezapisane zmiany
-		bindings.undoAvailableProperty().set(true);	
-		bindings.redoAvailableProperty().set(true);		// Podobnie z undo i redo
+		bindings.undoAvailableProperty().set(false);	
+		bindings.redoAvailableProperty().set(false);		// Podobnie z undo i redo
 	}
 
 	public MainPaneBindings getPaneBindings() {
@@ -160,14 +171,33 @@ public class MainPaneController implements Initializable {
 	 * @throws ApplicationException
 	 */
 	public void undo() throws ApplicationException {
+		Operacja op = operations.get(actualPosition - 1);
+		
+		actualPosition--;
+		
+		if (op.typ() == TypOperacji.ADD)
+			op.przodek().getChildren().remove(op.syn());
+		else
+			op.przodek().getChildren().add(op.syn());
+		
 		System.out.println("On undo");	//TODO Tutaj umiescic obsluge undo
 	}
+	
 
 	/**
 	 * Ponawia ostatnia cofnieta operacje na forum.
 	 * @throws ApplicationException
 	 */
 	public void redo() throws ApplicationException {
+		Operacja op = operations.get(actualPosition);
+		
+		actualPosition++;
+		
+		if (op.typ() == TypOperacji.ADD)
+			op.przodek().getChildren().add(op.syn());
+		else
+			op.przodek().getChildren().remove(op.syn());
+			
 		System.out.println("On redo");	//TODO Tutaj umiescic obsluge redo
 	}
 
@@ -178,8 +208,16 @@ public class MainPaneController implements Initializable {
 	 */
 	public void addNode(NodeViewModel node) throws ApplicationException {
 		getCurrentNode().ifPresent(currentlySelected -> {
+			
+			NodeViewModel przodek = currentlySelected;
+			
+			operations.add(actualPosition, new Operacja(przodek, node, TypOperacji.ADD));
+			
+			actualPosition++;
+			
 			currentlySelected.getChildren().add(node);		// Zmieniamy jedynie model, widok (TreeView) jest aktualizowany z poziomu
 															// funkcji nasluchujacej na zmiany w modelu (zob. metode createViewNode ponizej)
+			
 		});
 	}
 
@@ -196,13 +234,34 @@ public class MainPaneController implements Initializable {
 				return; // Blokujemy usuniecie korzenia - TreeView bez korzenia jest niewygodne w obsludze
 			} else {
 				parentModel = parent.getValue();
+			
+				operations.add(actualPosition, new Operacja(parentModel, currentModel, TypOperacji.REMOVE));
+				
+				actualPosition++;
+
 				parentModel.getChildren().remove(currentModel); // Zmieniamy jedynie model, widok (TreeView) jest aktualizowany z poziomu
 																// funkcji nasluchujacej na zmiany w modelu (zob. metode createViewNode ponizej)
 			}
+			
 
 		});
 	}
-
+	
+	/**
+	 * ustawiamy aktywność przycisków redo/undo
+	 */
+	private void setModificationButtons() {
+		if (actualPosition == 0)
+			bindings.undoAvailableProperty().set(false);
+		else
+			bindings.undoAvailableProperty().set(true);
+		
+		if (actualPosition == operations.size())
+			bindings.redoAvailableProperty().set(false);
+		else
+			bindings.redoAvailableProperty().set(true);
+	}
+	
 	private Node openInView(NodeViewModel document) throws ApplicationException {
 		Node view = loadFXML();
 
@@ -219,13 +278,16 @@ public class MainPaneController implements Initializable {
 		ForumTreeItem root = createViewNode(document);
 		root.addEventHandler(TreeItem.<NodeViewModel> childrenModificationEvent(), event -> {
 			//TODO Moze przydac sie do wykrywania usuwania/dodawania wezlow w drzewie (widoku)
-			if (event.wasAdded()) {
-				System.out.println("Adding to " + event.getSource());
+			if (event.wasAdded()) { 
+				//System.out.println("Adding to " + event.getSource());	
+				setModificationButtons();
 			}
 			
 			if (event.wasRemoved()) {
-				System.out.println("Removing from " + event.getSource());
+				// System.out.println("Removing from " + event.getSource());
+				setModificationButtons();
 			}
+			
 			bindings.hasChangesProperty().set(true);
 		});
 
@@ -309,7 +371,7 @@ public class MainPaneController implements Initializable {
 				}
 			}
 		});
-		
+
 		return viewNode;
 	}
 
