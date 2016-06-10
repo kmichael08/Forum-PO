@@ -11,7 +11,6 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -29,7 +28,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import pl.edu.mimuw.forum.data.Operacja;
 import pl.edu.mimuw.forum.data.TypOperacji;
-import pl.edu.mimuw.forum.example.Dummy;
 import pl.edu.mimuw.forum.exceptions.ApplicationException;
 import pl.edu.mimuw.forum.ui.bindings.MainPaneBindings;
 import pl.edu.mimuw.forum.ui.helpers.DialogHelper;
@@ -67,10 +65,14 @@ public class MainPaneController implements Initializable {
 	@FXML
 	private DetailsPaneController detailsController;
 	
-	// Historia dokonanych operacji
+	/**
+	Historia dokonanych operacji
+	*/
 	private List<Operacja> operations = new ArrayList<Operacja>();
 	
-	// Pozycja aktualna na liście
+	/**
+	 * Pozycja na liscie opearacji
+	 */
 	private int actualPosition = 0;
 	
 	
@@ -381,7 +383,6 @@ public class MainPaneController implements Initializable {
 
 	private void onItemSelected(TreeItem<NodeViewModel> oldItem, TreeItem<NodeViewModel> newItem) {
 		detailsController.setModel(newItem != null ? newItem.getValue() : null);
-		// klikniecie w inny node
 	}
 
 }

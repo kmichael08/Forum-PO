@@ -18,23 +18,16 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import pl.edu.mimuw.forum.example.Dummy;
 import pl.edu.mimuw.forum.exceptions.ApplicationException;
 import pl.edu.mimuw.forum.ui.bindings.MainPaneBindings;
 import pl.edu.mimuw.forum.ui.bindings.ToolbarBindings;
 import pl.edu.mimuw.forum.ui.helpers.AcceleratorHelper;
 import pl.edu.mimuw.forum.ui.helpers.DialogHelper;
-import pl.edu.mimuw.forum.ui.models.CommentViewModel;
 import pl.edu.mimuw.forum.ui.models.NodeViewModel;
 
 /**
@@ -122,7 +115,6 @@ public class ApplicationController implements Initializable {
 		try {
 			open(null);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -148,7 +140,6 @@ public class ApplicationController implements Initializable {
 		try {
 			open(file);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -171,7 +162,6 @@ public class ApplicationController implements Initializable {
 			return;
 		} 
 		catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
