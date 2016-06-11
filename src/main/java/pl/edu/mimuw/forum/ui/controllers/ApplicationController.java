@@ -166,7 +166,16 @@ public class ApplicationController implements Initializable {
 		}
 		
 		addView(view, controller);
-	
+		
+		Optional<MainPaneController> controllerOption = getPaneController();
+		
+		// otwieramy plik czy tworzymy nowy
+		if (controllerOption.isPresent()) {
+			MainPaneBindings bindings = controllerOption.get().getPaneBindings();
+			if (file != null) bindings.hasChangesProperty().set(false);
+			else bindings.hasChangesProperty().set(true);
+		}
+
 	}
 
 	/**
@@ -226,7 +235,6 @@ public class ApplicationController implements Initializable {
 		when(bindings.getCanAddNode(), () -> {
 			Dialog<NodeViewModel> dialog = createAddDialog();
 			
-			// dialog.show();
 			dialog.showAndWait().ifPresent(node -> getPaneController()
 					.ifPresent(controller -> tryExecute("Error adding a new node.", () -> controller.addNode(node))));
 			

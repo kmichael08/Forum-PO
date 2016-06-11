@@ -31,6 +31,7 @@ import pl.edu.mimuw.forum.data.TypOperacji;
 import pl.edu.mimuw.forum.exceptions.ApplicationException;
 import pl.edu.mimuw.forum.ui.bindings.MainPaneBindings;
 import pl.edu.mimuw.forum.ui.helpers.DialogHelper;
+import pl.edu.mimuw.forum.ui.models.CommentViewModel;
 import pl.edu.mimuw.forum.ui.models.NodeViewModel;
 import pl.edu.mimuw.forum.ui.tree.ForumTreeItem;
 import pl.edu.mimuw.forum.ui.tree.TreeLabel;
@@ -68,7 +69,7 @@ public class MainPaneController implements Initializable {
 	/**
 	Historia dokonanych operacji
 	*/
-	private List<Operacja> operations = new ArrayList<Operacja>();
+	private List<Operacja> operations;
 	
 	/**
 	 * Pozycja na liscie opearacji
@@ -78,6 +79,7 @@ public class MainPaneController implements Initializable {
 	
 	public MainPaneController() {
 		bindings = new MainPaneBindings();
+		operations = new ArrayList<Operacja>();
 	}
 
 	@Override
@@ -127,7 +129,7 @@ public class MainPaneController implements Initializable {
 			
 		} 
 		else {
-			document = new NodeViewModel("Welcome to a new forum", "Admin");
+			document = new CommentViewModel("Welcome to a new forum", "Admin");
 		}
 
 		/** Dzieki temu kontroler aplikacji bedzie mogl wyswietlic nazwe pliku jako tytul zakladki.
@@ -158,7 +160,8 @@ public class MainPaneController implements Initializable {
 		
 			out.writeObject(document.toNode());
 			out.close();
-				
+			
+			// plik zapisany
 			bindings.hasChangesProperty().set(false);
 		}
 	}
@@ -204,6 +207,7 @@ public class MainPaneController implements Initializable {
 	public void addNode(NodeViewModel node) throws ApplicationException {
 		getCurrentNode().ifPresent(currentlySelected -> {
 			
+			// dodajemy operacje dodania do listy
 			NodeViewModel przodek = currentlySelected;
 			
 			operations.add(actualPosition, new Operacja(przodek, node, TypOperacji.ADD));
@@ -229,7 +233,8 @@ public class MainPaneController implements Initializable {
 				return; // Blokujemy usuniecie korzenia - TreeView bez korzenia jest niewygodne w obsludze
 			} else {
 				parentModel = parent.getValue();
-			
+				
+				// dodajemy operacje usuwania do listy
 				operations.add(actualPosition, new Operacja(parentModel, currentModel, TypOperacji.REMOVE));
 				
 				actualPosition++;
@@ -264,7 +269,6 @@ public class MainPaneController implements Initializable {
 			try {
 				//Do reprezentacji graficznej wezla uzywamy niestandardowej klasy wyswietlajacej 2 etykiety
 				// tworzenie nowego widoku
-				bindings.hasChangesProperty().set(true);
 				return new TreeLabel();
 			} catch (ApplicationException e) {
 				DialogHelper.ShowError("Error creating a tree cell.", e);
@@ -276,12 +280,10 @@ public class MainPaneController implements Initializable {
 		root.addEventHandler(TreeItem.<NodeViewModel> childrenModificationEvent(), event -> {
 
 			if (event.wasAdded()) { 
-				//System.out.println("Adding to " + event.getSource());	
 				setModificationButtons();
 			}
 			
 			if (event.wasRemoved()) {
-				// System.out.println("Removing from " + event.getSource());
 				setModificationButtons();
 			}
 			
@@ -300,9 +302,6 @@ public class MainPaneController implements Initializable {
 		treePane.getSelectionModel().selectedItemProperty()
 				.addListener((observable, oldValue, newValue) -> onItemSelected(oldValue, newValue));
 		
-		// otwarcie z pliku
-		bindings.hasChangesProperty().set(false);
-
 		return view;
 	}
 	
@@ -356,8 +355,6 @@ public class MainPaneController implements Initializable {
 				if (change.wasAdded()) {
 					int i = change.getFrom();
 					for (NodeViewModel child : change.getAddedSubList()) {
-						// TODO Tutaj byc moze nalezy dodac zapisywanie jaka operacja jest wykonywana
-						// by mozna bylo ja odtworzyc przy undo/redo
 						addToTree(child, viewNode, i);	// uwzgledniamy nowy wezel modelu w widoku
 						i++;
 					}
@@ -365,8 +362,6 @@ public class MainPaneController implements Initializable {
 
 				if (change.wasRemoved()) {
 					for (int i = change.getFrom(); i <= change.getTo(); ++i) {
-						// TODO Tutaj byc moze nalezy dodac zapisywanie jaka operacja jest wykonywana
-						// by mozna bylo ja odtworzyc przy undo/redo
 						removeFromTree((ForumTreeItem) viewNode.getChildren().get(i)); // usuwamy wezel modelu z widoku
 					}
 				}

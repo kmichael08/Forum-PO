@@ -12,11 +12,11 @@ import pl.edu.mimuw.forum.ui.models.NodeViewModel;
 public class AddDialogController {
 	
     @FXML 
-    private ToggleGroup myToggleGroup;
-    
-    @FXML 
     private Dialog<NodeViewModel> dialog;
-    
+	
+    @FXML 
+    private ToggleGroup myToggleGroup;
+        
 	@FXML
 	private TextField userField;
 
@@ -35,9 +35,8 @@ public class AddDialogController {
         okButton.disableProperty().bind(
                 Bindings.isNull(
                         myToggleGroup.selectedToggleProperty()
-                )
-        );
-		
+                ));
+    		
         dialog.setResultConverter(this::convertDialogResult);
     }
 
