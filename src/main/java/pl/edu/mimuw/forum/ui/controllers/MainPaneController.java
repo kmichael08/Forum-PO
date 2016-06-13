@@ -10,7 +10,6 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -26,8 +25,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import pl.edu.mimuw.forum.data.Operacja;
-import pl.edu.mimuw.forum.data.TypOperacji;
+import pl.edu.mimuw.forum.data.Dodawanie;
+import pl.edu.mimuw.forum.data.ListaOperacji;
+import pl.edu.mimuw.forum.data.Usuwanie;
 import pl.edu.mimuw.forum.exceptions.ApplicationException;
 import pl.edu.mimuw.forum.ui.bindings.MainPaneBindings;
 import pl.edu.mimuw.forum.ui.helpers.DialogHelper;
@@ -66,20 +66,10 @@ public class MainPaneController implements Initializable {
 	@FXML
 	private DetailsPaneController detailsController;
 	
-	/**
-	Historia dokonanych operacji
-	*/
-	private List<Operacja> operations;
-	
-	/**
-	 * Pozycja na liscie opearacji
-	 */
-	private int actualPosition = 0;
-	
+			
 	
 	public MainPaneController() {
 		bindings = new MainPaneBindings();
-		operations = new ArrayList<Operacja>();
 	}
 
 	@Override
@@ -171,15 +161,12 @@ public class MainPaneController implements Initializable {
 	 * @throws ApplicationException
 	 */
 	public void undo() throws ApplicationException {
-		Operacja op = operations.get(actualPosition - 1);
-		
-		actualPosition--;
-		
-		if (op.typ() == TypOperacji.ADD)
-			op.przodek().getChildren().remove(op.syn());
+		ListaOperacji.undo();
+		if (ListaOperacji.actualPosition() == 0)
+			bindings.undoAvailableProperty().set(false);
 		else
-			op.przodek().getChildren().add(op.syn());
-		
+			bindings.undoAvailableProperty().set(true);
+			bindings.redoAvailableProperty().set(true);
 	}
 	
 
@@ -188,15 +175,12 @@ public class MainPaneController implements Initializable {
 	 * @throws ApplicationException
 	 */
 	public void redo() throws ApplicationException {
-		Operacja op = operations.get(actualPosition);
-		
-		actualPosition++;
-		
-		if (op.typ() == TypOperacji.ADD)
-			op.przodek().getChildren().add(op.syn());
-		else
-			op.przodek().getChildren().remove(op.syn());
-		
+		ListaOperacji.redo();
+		if (ListaOperacji.actualPosition() == ListaOperacji.size())
+			bindings.redoAvailableProperty().set(false);
+		else 
+			bindings.redoAvailableProperty().set(true);
+			bindings.undoAvailableProperty().set(true);
 	}
 
 	/**
@@ -209,11 +193,9 @@ public class MainPaneController implements Initializable {
 			
 			// dodajemy operacje dodania do listy
 			NodeViewModel przodek = currentlySelected;
-			
-			operations.add(actualPosition, new Operacja(przodek, node, TypOperacji.ADD));
-			
-			actualPosition++;
-			
+						
+			ListaOperacji.add(ListaOperacji.actualPosition(), new Dodawanie(przodek, node));
+						
 			currentlySelected.getChildren().add(node);		// Zmieniamy jedynie model, widok (TreeView) jest aktualizowany z poziomu
 															// funkcji nasluchujacej na zmiany w modelu (zob. metode createViewNode ponizej)
 			
@@ -235,10 +217,8 @@ public class MainPaneController implements Initializable {
 				parentModel = parent.getValue();
 				
 				// dodajemy operacje usuwania do listy
-				operations.add(actualPosition, new Operacja(parentModel, currentModel, TypOperacji.REMOVE));
+				ListaOperacji.add(ListaOperacji.actualPosition(), new Usuwanie(parentModel, currentModel));
 				
-				actualPosition++;
-
 				parentModel.getChildren().remove(currentModel); // Zmieniamy jedynie model, widok (TreeView) jest aktualizowany z poziomu
 																// funkcji nasluchujacej na zmiany w modelu (zob. metode createViewNode ponizej)
 			}
@@ -247,19 +227,18 @@ public class MainPaneController implements Initializable {
 		});
 	}
 	
-	/**
-	 * ustawiamy aktywność przycisków redo/undo
-	 */
+	// Ustawiamy przyciski modyfikacji
 	private void setModificationButtons() {
-		if (actualPosition == 0)
+		if (ListaOperacji.actualPosition() == 0)
 			bindings.undoAvailableProperty().set(false);
 		else
 			bindings.undoAvailableProperty().set(true);
 		
-		if (actualPosition == operations.size())
+		if (ListaOperacji.actualPosition() == ListaOperacji.size())
 			bindings.redoAvailableProperty().set(false);
-		else
+		else 
 			bindings.redoAvailableProperty().set(true);
+
 	}
 	
 	private Node openInView(NodeViewModel document) throws ApplicationException {
@@ -281,6 +260,7 @@ public class MainPaneController implements Initializable {
 
 			if (event.wasAdded()) { 
 				setModificationButtons();
+				
 			}
 			
 			if (event.wasRemoved()) {

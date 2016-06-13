@@ -7,6 +7,9 @@ import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import pl.edu.mimuw.forum.data.EdycjaAutora;
+import pl.edu.mimuw.forum.data.EdycjaTresci;
+import pl.edu.mimuw.forum.data.ListaOperacji;
 import pl.edu.mimuw.forum.ui.models.NodeViewModel;
 
 public class ContentPaneController extends BasePaneController {
@@ -19,7 +22,10 @@ public class ContentPaneController extends BasePaneController {
 	@FXML
 	private TextArea commentField;
 	
+	boolean zmiana = false;
+	
 	public void setModel(NodeViewModel model) {
+		zmiana = true;
 		if (this.model != null) {
 			userField.textProperty().unbindBidirectional(this.model.getAuthor());
 			commentField.textProperty().unbindBidirectional(this.model.getContent());
@@ -31,23 +37,30 @@ public class ContentPaneController extends BasePaneController {
 			userField.textProperty().bindBidirectional(this.model.getAuthor());
 			commentField.textProperty().bindBidirectional(this.model.getContent());
 		}
-		
+				
 		setHasModel(this.model != null);
+		zmiana = false;
 	}
-	
+			
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		super.initialize(location, resources);
-		
+
 		userProperty().addListener((observable, oldValue, newValue) -> {
 			
-			// System.out.println("Changing user name: " + oldValue + "->" + newValue);
-
+				if (zmiana == false) {
+						// System.out.println("Changing user name: " + oldValue + "->" + newValue);
+						ListaOperacji.add(new EdycjaAutora(model, newValue, oldValue));
+				}
 		});
 		
 		commentProperty().addListener((observable, oldValue, newValue) -> {
-			// System.out.println("Changing comment: " + oldValue + "->" + newValue);
+				if (zmiana == false) {
+					// System.out.println("Changing comment: " + oldValue + "->" + newValue);
+					ListaOperacji.add(new EdycjaTresci(model, newValue, oldValue));
+				}
 		});
+		
 	}
 	
 	public StringProperty userProperty() {
